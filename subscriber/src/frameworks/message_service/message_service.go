@@ -1,13 +1,18 @@
 package frameworks
 
 import (
+	"log"
+
 	"github.com/streadway/amqp"
+
+	interfaces "sub/src/interfaces"
 )
 
 // IMessageService ...
 type IMessageService interface {
 	Connect() error
-	Pub() error
+	Sub(controller interfaces.IController) error
+	Defer()
 }
 
 type messageServicer struct {
@@ -45,8 +50,37 @@ func (s *messageServicer) Connect() error {
 	return nil
 }
 
-func (s *messageServicer) Pub() error {
+func (s *messageServicer) Sub(controller interfaces.IController) error {
+
+	msgs, err := (*s.channel).Consume(
+		"hello", // queue
+		"",      // consumer
+		true,    // auto-ack
+		false,   // exclusive
+		false,   // no-local
+		false,   // no-wait
+		nil,     // args
+	)
+	if err != nil {
+		return err
+	}
+
+	forever := make(chan bool)
+
+	go func() {
+		for d := range msgs {
+			controller.Handle(d.Body)
+		}
+	}()
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	<-forever
+
 	return nil
+}
+
+func (s *messageServicer) Defer() {
+	defer s.conn.Close()
+	defer s.channel.Close()
 }
 
 // MessageService ..
