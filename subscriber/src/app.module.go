@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	usecases "sub/src/application/usecases"
 	messageService "sub/src/frameworks/message_service"
 	interfaces "sub/src/interfaces"
 )
@@ -29,7 +30,8 @@ func (m *AppModule) InitServer() {
 
 // RegisterAMQPSubscriptions ...
 func (m *AppModule) registerAMQPSubscriptions() {
-	_controller := interfaces.SubscriptController()
 
+	_usecase := usecases.OutputAmqpDataUsecase()
+	_controller := interfaces.SubscriptController(_usecase)
 	m.messageService.Sub(_controller)
 }

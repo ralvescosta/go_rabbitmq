@@ -1,15 +1,33 @@
 package interfaces
 
-import "log"
+import (
+	"encoding/json"
+	"log"
 
-type subscriptController struct{}
+	usecase "sub/src/application/usecases"
+	entities "sub/src/business/entities"
+)
 
-func (*subscriptController) Handle(data []byte) bool {
-	log.Printf("Received a message: %s", data)
-	return true
+type subscriptController struct {
+	usecase usecase.IOutputAmqpDataUsecase
+}
+
+func (s *subscriptController) Handle(data []byte) bool {
+	receivedData := &entities.AmqpDataReceivedEntity{}
+
+	err := json.Unmarshal(data, receivedData)
+
+	if err != nil {
+		log.Println("Error on Unmarshal")
+		return true
+	}
+
+	result := s.usecase.Output(receivedData)
+
+	return result
 }
 
 // SubscriptController ...
-func SubscriptController() IController {
-	return &subscriptController{}
+func SubscriptController(usecase usecase.IOutputAmqpDataUsecase) IController {
+	return &subscriptController{usecase: usecase}
 }
