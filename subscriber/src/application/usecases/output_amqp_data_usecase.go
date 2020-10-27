@@ -14,6 +14,7 @@ type usecase struct{}
 
 func (*usecase) Output(data *entities.AmqpDataReceivedEntity) bool {
 	log.Println("Print on Usecase: ", data)
+
 	return true
 }
 

@@ -39,5 +39,4 @@ func TestSubscriptController(t *testing.T) {
 	result := sut.Handle(mocks.handleInput)
 
 	assert.Equal(t, true, result)
-
 }
