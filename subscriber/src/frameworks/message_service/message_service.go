@@ -79,8 +79,8 @@ func (s *messageServicer) Sub(controller interfaces.IController) error {
 }
 
 func (s *messageServicer) Defer() {
-	defer s.conn.Close()
 	defer s.channel.Close()
+	defer s.conn.Close()
 }
 
 // MessageService ..

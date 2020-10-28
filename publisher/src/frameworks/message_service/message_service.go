@@ -66,8 +66,8 @@ func (s *messageServicer) Pub(exchange string, routingKey string, mandatory bool
 }
 
 func (s *messageServicer) Defer() {
-	defer s.conn.Close()
 	defer s.channel.Close()
+	defer s.conn.Close()
 }
 
 // MessageService ..
